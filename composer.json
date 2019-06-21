@@ -1,0 +1,20 @@
+{
+  "name": "oilstone/php-rsql-parser",
+  "description": "PHP library for parsing RSQL or FIQL queries. Designed for use in RESTful APIs.",
+  "homepage": "https://github.com/oilstone/php-rsql-parser",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Online Solutions",
+      "email": "support@onlinesolutionsltd.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Oilstone\\RsqlParser\\": "src"
+    }
+  }
+}
