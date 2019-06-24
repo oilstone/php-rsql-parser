@@ -185,6 +185,10 @@ class Parser
             }
         }
 
+        if ($condition) {
+            $conditions[$conditionIndex]['condition'] = $condition;
+        }
+
         return array_map(function ($condition) {
             $condition['condition'] = Condition::fromString($condition['condition']);
 
