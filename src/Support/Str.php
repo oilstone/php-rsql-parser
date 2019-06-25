@@ -3,13 +3,12 @@
 namespace Oilstone\RsqlParser\Support;
 
 use Exception;
-use Illuminate\Support\Str as BaseStr;
 
 /**
  * Class Str
  * @package Oilstone\RsqlParser\Support
  */
-class Str extends BaseStr
+class Str
 {
     /**
      * @var array
