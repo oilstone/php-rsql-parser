@@ -25,6 +25,10 @@ class Parser
 
         $segments = $parser->initialiseOperators($segments);
 
+        $segments = $parser->mergeOperators($segments);
+
+        $segments = $parser->filterOperators($segments);
+
         return $parser->expression($segments);
     }
 
@@ -37,11 +41,10 @@ class Parser
     {
         $segments = [];
         $nextSegmentStart = Str::findUnescapedInstance($query, '(', 0, ['=']);
-        $nextSegmentEnd = false;
 
         $segments[] = $nextSegmentStart !== false ? substr($query, 0, $nextSegmentStart) : $query;
 
-        while ($nextSegmentStart !== false) {
+        if ($nextSegmentStart !== false) {
             try {
                 $nextSegmentEnd = Str::findClosingBracket($query, $nextSegmentStart);
             } catch (Exception $e) {
@@ -50,11 +53,7 @@ class Parser
 
             $segments[] = $this->segment(substr($query, $nextSegmentStart + 1, ($nextSegmentEnd - $nextSegmentStart) - 1));
 
-            $nextSegmentStart = Str::findUnescapedInstance($query, '(', $nextSegmentEnd + 1, ['=']);
-        }
-
-        if ($nextSegmentEnd !== false && $nextSegmentEnd < strlen($query) - 1) {
-            $segments[] = substr($query, $nextSegmentEnd + 1);
+            $segments = array_merge($segments, $this->segment(substr($query, $nextSegmentEnd + 1)));
         }
 
         return $segments;
@@ -108,6 +107,50 @@ class Parser
         }
 
         return $segments;
+    }
+
+    protected function mergeOperators(array $segments): array
+    {
+        foreach ($segments as $segmentIndex => $segment) {
+            if (is_array($segment['conditions'])) {
+                $segments[$segmentIndex]['conditions'] = $this->mergeOperators($segment['conditions']);
+            }
+
+            if ($segment['conditions'] === '' && isset($segments[$segmentIndex + 1])) {
+                $segments[$segmentIndex + 1]['initialOperator'] = $segment['initialOperator'];
+            }
+
+            if ($segment['conditions'] === '') {
+                unset($segments[$segmentIndex]);
+            }
+        }
+
+        return array_values($segments);
+    }
+
+    /**
+     * @param array $segments
+     * @return array
+     */
+    protected function filterOperators(array $segments): array
+    {
+        $segments = array_filter($segments, function ($segment) {
+            if (!isset($segment['conditions'])) {
+                return false;
+            }
+
+            if (is_array($segment['conditions'])) {
+                $segment['conditions'] = $this->filterOperators($segment['conditions']);
+            }
+
+            if (!$segment['conditions']) {
+                return false;
+            }
+
+            return true;
+        });
+
+        return array_values($segments);
     }
 
     /**
