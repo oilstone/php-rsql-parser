@@ -27,6 +27,8 @@ class Parser
 
         $segments = $parser->mergeOperators($segments);
 
+        $segments = $parser->filterOperators($segments);
+
         return $parser->expression($segments);
     }
 
@@ -122,6 +124,31 @@ class Parser
                 unset($segments[$segmentIndex]);
             }
         }
+
+        return array_values($segments);
+    }
+
+    /**
+     * @param array $segments
+     * @return array
+     */
+    protected function filterOperators(array $segments): array
+    {
+        $segments = array_filter($segments, function ($segment) {
+            if (!isset($segment['conditions'])) {
+                return false;
+            }
+
+            if (is_array($segment['conditions'])) {
+                $segment['conditions'] = $this->filterOperators($segment['conditions']);
+            }
+
+            if (!$segment['conditions']) {
+                return false;
+            }
+
+            return true;
+        });
 
         return array_values($segments);
     }
