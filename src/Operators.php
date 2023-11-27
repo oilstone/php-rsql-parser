@@ -13,6 +13,7 @@ use Oilstone\RsqlParser\Operators\IsNull;
 use Oilstone\RsqlParser\Operators\LessThan;
 use Oilstone\RsqlParser\Operators\LessThanOrEqualTo;
 use Oilstone\RsqlParser\Operators\Like;
+use Oilstone\RsqlParser\Operators\NotLike;
 use Oilstone\RsqlParser\Operators\NotEqualTo;
 use Oilstone\RsqlParser\Operators\NotIn;
 use Oilstone\RsqlParser\Operators\Operator;
@@ -37,6 +38,7 @@ class Operators
         LessThan::class,
         LessThanOrEqualTo::class,
         Like::class,
+        NotLike::class,
         NotEqualTo::class,
         NotIn::class,
     ];
