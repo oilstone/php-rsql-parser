@@ -49,7 +49,9 @@ class Operators
      */
     public static function custom($operator)
     {
-        $operator = static::make($operator);
+        if (is_string($operator)) {
+            $operator = static::make($operator);
+        }
 
         static::$operators[] = $operator;
     }
@@ -61,7 +63,11 @@ class Operators
      */
     protected static function make($operator): ?Operator
     {
-        if (!$operator instanceof Operator && class_exists($operator)) {
+        if ($operator instanceof Operator) {
+            return $operator;
+        }
+
+        if (class_exists($operator)) {
             $operator = new $operator;
         } else {
             $operator = null;
